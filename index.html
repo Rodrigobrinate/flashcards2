@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Inteligentes - Grocery Store</title>
+    <style>
+        /* CSS - Estilização */
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --text-color: #333;
+            --card-height: 300px;
+            --card-width: 500px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .stats {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Container do Card */
+        .card-container {
+            background-color: transparent;
+            width: var(--card-width);
+            height: var(--card-height);
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        /* O Card em si */
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Faces do card */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .card-front {
+            background-color: #fff;
+            color: var(--text-color);
+            border: 2px solid #ddd;
+        }
+
+        .card-front::after {
+            content: "Clique para ver a resposta";
+            position: absolute;
+            bottom: 15px;
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .card-back {
+            background-color: var(--primary-color);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Controles */
+        .controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.1s, opacity 0.3s;
+            font-weight: bold;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .btn-wrong {
+            background-color: var(--error-color);
+        }
+        
+        .btn-wrong:hover {
+            background-color: #c82333;
+        }
+
+        .btn-right {
+            background-color: var(--success-color);
+        }
+
+        .btn-right:hover {
+            background-color: #218838;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            margin-top: 20px;
+        }
+
+        /* Tela de Fim */
+        .finished-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .finished-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            :root {
+                --card-width: 90vw;
+                --card-height: 350px;
+            }
+            .card-face {
+                font-size: 1.2rem;
+            }
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-area">
+        <h2>Grocery Store Dialogue</h2>
+        <div class="stats">
+            <span id="remaining-count">Restantes: 0</span>
+        </div>
+
+        <div class="card-container" onclick="flipCard()">
+            <div class="card" id="flashcard">
+                <div class="card-face card-front" id="card-front">
+                    </div>
+                <div class="card-face card-back" id="card-back">
+                    </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-wrong" onclick="markWrong()">❌ Errei (Repetir)</button>
+            <button class="btn-right" onclick="markRight()">✅ Acertei</button>
+        </div>
+        
+        <button class="btn-reset" onclick="resetProgress()" style="margin-top: 30px; font-size: 0.8rem; padding: 10px;">Reiniciar Tudo</button>
+    </div>
+
+    <div id="finished-area" class="finished-screen">
+        <div class="finished-icon">🎉</div>
+        <h2>Parabéns!</h2>
+        <p>Você completou todos os cards desta lista.</p>
+        <button class="btn-reset" onclick="resetProgress()">Começar de Novo</button>
+    </div>
+
+    <script>
+        // Dados Originais (Master Deck)
+        const masterDeck = [
+            { en: "Att Grocery Store.", pt: "No Supermercado." },
+            { en: "Hello, Maria, how are you today?", pt: "Olá, Maria, como você está hoje?" },
+            { en: "Oi, Daniel.", pt: "Oi, Daniel." },
+            { en: "I am good. How about you?", pt: "Estou bem. E quanto a você?" },
+            { en: "Thank you.", pt: "Obrigado." },
+            { en: "I am shopping for dinner.", pt: "Estou fazendo compras para o jantar." },
+            { en: "Oh Nice. What will you cook?", pt: "Ah, legal. O que você vai cozinhar?" },
+            { en: "I want to make pasta.", pt: "Quero fazer macarrão." },
+            { en: "Do you like pasta?", pt: "Você gosta de macarrão?" },
+            { en: "Yes. I love pasta.", pt: "Sim. Eu amo macarrão." },
+            { en: "What kind of pasta will use?", pt: "Que tipo de macarrão vai usar?" },
+            { en: "I will use spaghetti.", pt: "Vou usar espaguete." },
+            { en: "It is my favorite spaghetti.", pt: "É o meu espaguete favorito." },
+            { en: "It Is delicious. Do you have sauce?", pt: "É delicioso. Você tem molho?" },
+            { en: "Yes!", pt: "Sim!" },
+            { en: "I need to buy. Do you want to help me?", pt: "Preciso comprar. Quer me ajudar?" },
+            { en: "Let's go to the sauce aisle.", pt: "Vamos ao corredor de molhos." },
+            { en: "I see the tomatoes.", pt: "Estou vendo os tomates." },
+            { en: "Yes! But there are kinds of sauce.", pt: "Sim! Mas há vários tipos de molho." },
+            { en: "Which do you think is the best?", pt: "Qual você acha que é o melhor?" },
+            { en: "I like the one with herbs, it is very tasty.", pt: "Eu gosto daquele com ervas, é muito saboroso." },
+            { en: "Let me take that. Do you need cheese?", pt: "Vou levar esse. Você precisa de queijo?" },
+            { en: "Yes, I need cheese, Thank you for reminding me.", pt: "Sim, preciso de queijo, obrigado por me lembrar." },
+            { en: "The cheese is in the dairy section.", pt: "O queijo está na seção de laticínios." },
+            { en: "Let's go to see how many types of cheese.", pt: "Vamos lá ver quantos tipos de queijo tem." },
+            { en: "Yes! I see cheddar and mozzarella.", pt: "Sim! Vejo cheddar e mussarela." },
+            { en: "I like mozzarella. It is soft and creamy.", pt: "Eu gosto de mussarela. É macio e cremoso." },
+            { en: "I will take mozzarella.", pt: "Vou levar a mussarela." },
+            { en: "Good choice. Do you need anything else?", pt: "Boa escolha. Precisa de mais alguma coisa?" },
+            { en: "Yes. I need for the sauce.", pt: "Sim. Preciso para o molho." },
+            { en: "What will you buy?", pt: "O que você vai comprar?" },
+            { en: "I will buy bell peppers. Onions are good for flavor.", pt: "Vou comprar pimentões. Cebolas são boas para dar sabor." },
+            { en: "Yes! And Bell peppers are colorful.", pt: "Sim! E pimentões são coloridos." },
+            { en: "Let's find in the vegetable section look.", pt: "Vamos procurar na seção de vegetais, olhe." },
+            { en: "There are fresh bell peppers.", pt: "Há pimentões frescos." },
+            { en: "They look very nice. What do you want?", pt: "Parecem muito bons. O que você quer?" },
+            { en: "I want red and green Bell Peppers.", pt: "Quero pimentões vermelhos e verdes." },
+            { en: "Good choice They are sweet and crunchy.", pt: "Boa escolha. Eles são doces e crocantes." },
+            { en: "I will take each color great.", pt: "Vou levar um de cada cor, ótimo." },
+            { en: "Let's get some onions.", pt: "Vamos pegar algumas cebolas." },
+            { en: "Now here the onions smell strong.", pt: "Agora aqui, as cebolas têm cheiro forte." },
+            { en: "They are good for cooking.", pt: "Elas são boas para cozinhar." },
+            { en: "Yes! Do you need anything for dessert?", pt: "Sim! Você precisa de algo para a sobremesa?" },
+            { en: "Yes! I want something sweet.", pt: "Sim! Quero algo doce." },
+            { en: "How about some fruit? That sounds nice.", pt: "Que tal frutas? Parece legal." },
+            { en: "I like strawberry and bananas.", pt: "Gosto de morango e bananas." },
+            { en: "Strawberries are sweet. I will take some.", pt: "Morangos são doces. Vou levar alguns." },
+            { en: "And bananas. Should I get a bunch?", pt: "E bananas. Devo pegar um cacho?" },
+            { en: "Great. You have everything for dinner now.", pt: "Ótimo. Você tem tudo para o jantar agora." },
+            { en: "Yes! Thank you for your help, Maria.", pt: "Sim! Obrigado pela sua ajuda, Maria." },
+            { en: "You are welcome, Daniel.", pt: "De nada, Daniel." },
+            { en: "It was fun shopping together.", pt: "Foi divertido fazer compras juntos." },
+            { en: "Let's go to the checkout now.", pt: "Vamos para o caixa agora." },
+            { en: "Yes! It is time to pay.", pt: "Sim! É hora de pagar." },
+            { en: "I hope you will be fine.", pt: "Espero que fique tudo bem." },
+            { en: "I will invite you for dinner.", pt: "Vou convidar você para jantar." },
+            { en: "Oh, that sounds wonderful.", pt: "Ah, isso parece maravilhoso." },
+            { en: "Thank you, see you at my place at six.", pt: "Obrigado, te vejo na minha casa às seis." },
+            { en: "Yes! I will be there.", pt: "Sim! Eu estarei lá." },
+            { en: "See you, bye Maria.", pt: "Até mais, tchau Maria." },
+            { en: "Bye Daniel.", pt: "Tchau Daniel." }
+        ];
+
+        // Variáveis de Estado
+        let queue = [];
+        const STORAGE_KEY = 'grocery_flashcards_queue';
+
+        // Elementos do DOM
+        const cardElement = document.getElementById('flashcard');
+        const frontText = document.getElementById('card-front');
+        const backText = document.getElementById('card-back');
+        const remainingText = document.getElementById('remaining-count');
+        const gameArea = document.getElementById('game-area');
+        const finishedArea = document.getElementById('finished-area');
+
+        // Inicialização
+        function init() {
+            const savedQueue = localStorage.getItem(STORAGE_KEY);
+            
+            if (savedQueue) {
+                queue = JSON.parse(savedQueue);
+                console.log("Progresso carregado do LocalStorage");
+            } else {
+                // Clona o array original para não modificar a fonte
+                queue = [...masterDeck]; 
+                console.log("Iniciando novo jogo");
+            }
+            
+            renderCard();
+        }
+
+        function saveProgress() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(queue));
+        }
+
+        function renderCard() {
+            // Se a fila acabou
+            if (queue.length === 0) {
+                gameArea.style.display = 'none';
+                finishedArea.style.display = 'flex';
+                // Remove do storage para que o próximo reload comece do zero (opcional, aqui mantive salvo como vazio)
+                saveProgress(); 
+                return;
+            }
+
+            gameArea.style.display = 'block';
+            finishedArea.style.display = 'none';
+
+            // Garante que o card comece virado para frente
+            cardElement.classList.remove('is-flipped');
+
+            // Atualiza textos (Pequeno delay se estiver virado para não ver a troca)
+            setTimeout(() => {
+                const currentCard = queue[0];
+                frontText.innerText = currentCard.en;
+                backText.innerText = currentCard.pt;
+                remainingText.innerText = `Faltam: ${queue.length} cards`;
+            }, 200);
+        }
+
+        function flipCard() {
+            cardElement.classList.toggle('is-flipped');
+        }
+
+        function markRight() {
+            if (queue.length === 0) return;
+
+            // Remove o primeiro item da fila (FIFO)
+            queue.shift();
+            
+            saveProgress();
+            renderCard();
+        }
+
+        function markWrong() {
+            if (queue.length === 0) return;
+
+            // Remove o primeiro item
+            const card = queue.shift();
+            
+            // Adiciona ele no FINAL da fila
+            queue.push(card);
+            
+            saveProgress();
+            
+            // Efeito visual: Forçar a "virada" do card para frente antes de atualizar o texto
+            cardElement.classList.remove('is-flipped');
+            
+            // Aguarda a animação de desvirar para trocar o texto
+            setTimeout(() => {
+                renderCard();
+            }, 300); // Metade do tempo da transição CSS
+        }
+
+        function resetProgress() {
+            if(confirm("Deseja realmente apagar seu progresso e começar do zero?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                queue = [...masterDeck];
+                init();
+            }
+        }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (queue.length === 0) return;
+            
+            if (e.code === 'Space' || e.key === 'Enter') {
+                e.preventDefault(); // Evita scroll
+                flipCard();
+            }
+            // Seta Direita = Acertei (Avança)
+            if (e.key === 'ArrowRight') markRight();
+            
+            // Seta Esquerda = Errei (Repete)
+            if (e.key === 'ArrowLeft') markWrong();
+        });
+
+        // Iniciar
+        init();
+
+    </script>
+</body>
+</html>
