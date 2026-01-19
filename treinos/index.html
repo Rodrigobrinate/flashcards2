@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Semanal</title>
+    <style>
+        :root {
+            --primary: #6c5ce7; /* Roxo suave */
+            --secondary: #a29bfe;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --success: #00b894;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        /* Accordion Style for Days */
+        .workout-day {
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .day-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .day-header:hover {
+            opacity: 0.9;
+        }
+
+        .day-content {
+            display: none; /* Hidden by default */
+            padding: 10px 0;
+        }
+
+        .day-content.active {
+            display: block;
+        }
+
+        /* Exercise Item */
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #dfe6e9;
+            transition: background 0.2s;
+        }
+
+        .exercise-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Checkbox */
+        .checkbox-wrapper {
+            position: relative;
+            margin-right: 15px;
+            height: 24px;
+            width: 24px;
+        }
+
+        .exercise-item input[type="checkbox"] {
+            opacity: 0;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .custom-check {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 24px;
+            width: 24px;
+            background-color: #eee;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .exercise-item input:checked ~ .custom-check {
+            background-color: var(--success);
+        }
+
+        .custom-check::after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 8px;
+            top: 4px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        .exercise-item input:checked ~ .custom-check::after {
+            display: block;
+        }
+
+        /* Text Styles */
+        .exercise-info {
+            flex-grow: 1;
+        }
+
+        .exercise-name {
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+        }
+
+        .exercise-details {
+            font-size: 0.85rem;
+            color: #636e72;
+            margin-top: 4px;
+        }
+
+        /* Completed State */
+        .exercise-item.completed .exercise-name {
+            text-decoration: line-through;
+            color: #b2bec3;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #dfe6e9;
+            width: 100%;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Treino Semanal</h1>
+        <p class="subtitle">Feminino • Moderado • 3x Semana</p>
+    </header>
+
+    <div class="workout-day">
+        <div class="day-header" onclick="toggleDay('day1')">
+            Dia 1: Inferiores (Foco Glúteo/Perna)
+            <span>▼</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-day1"></div></div>
+        <div class="day-content active" id="day1">
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day1')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Agachamento Goblet (Halter)</span>
+                    <span class="exercise-details">3 séries x 12 a 15 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day1')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Afundo / Passada</span>
+                    <span class="exercise-details">3 séries x 12 reps (cada perna)</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day1')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Stiff com Halteres</span>
+                    <span class="exercise-details">3 séries x 12 a 15 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day1')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Elevação Pélvica (Chão)</span>
+                    <span class="exercise-details">3 séries x 15 a 20 reps</span>
+                </div>
+            </div>
+             <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day1')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Panturrilha em Pé</span>
+                    <span class="exercise-details">3 séries x 20 reps</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="workout-day">
+        <div class="day-header" onclick="toggleDay('day2')">
+            Dia 2: Superiores + Abdômen
+            <span>▼</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-day2"></div></div>
+        <div class="day-content" id="day2">
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day2')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Supino Reto com Halteres</span>
+                    <span class="exercise-details">3 séries x 12 a 15 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day2')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Remada Curvada (Halteres)</span>
+                    <span class="exercise-details">3 séries x 12 a 15 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day2')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Desenvolvimento Ombros</span>
+                    <span class="exercise-details">3 séries x 10 a 12 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day2')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Rosca Direta + Tríceps Francês</span>
+                    <span class="exercise-details">2 séries x 15 reps (Biset)</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day2')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Prancha Abdominal</span>
+                    <span class="exercise-details">3 séries x 30 a 60 segundos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="workout-day">
+        <div class="day-header" onclick="toggleDay('day3')">
+            Dia 3: Full Body (Misto)
+            <span>▼</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-day3"></div></div>
+        <div class="day-content" id="day3">
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day3')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Agachamento Sumô (Halter)</span>
+                    <span class="exercise-details">3 séries x 15 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day3')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Subida no Banco (Step-up)</span>
+                    <span class="exercise-details">3 séries x 10 reps (cada perna)</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day3')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Flexão de Braços</span>
+                    <span class="exercise-details">3 séries x 8 a 12 reps (joelhos se precisar)</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day3')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Abdominal Remador</span>
+                    <span class="exercise-details">3 séries x 15 a 20 reps</span>
+                </div>
+            </div>
+            <div class="exercise-item">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" onchange="checkTask(this, 'day3')">
+                    <span class="custom-check"></span>
+                </div>
+                <div class="exercise-info">
+                    <span class="exercise-name">Cardio (Polichinelos ou Corda)</span>
+                    <span class="exercise-details">5 minutos finais</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para abrir/fechar os dias (Acordeão)
+        function toggleDay(id) {
+            const content = document.getElementById(id);
+            // Toggle classe active para mostrar/esconder
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+            } else {
+                // Opcional: Fechar os outros ao abrir um
+                document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
+                content.classList.add('active');
+            }
+        }
+
+        // Função para marcar exercício e atualizar progresso
+        function checkTask(checkbox, dayId) {
+            // Estilo visual da linha
+            const item = checkbox.closest('.exercise-item');
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+
+            updateProgress(dayId);
+        }
+
+        // Atualiza a barra de progresso do dia específico
+        function updateProgress(dayId) {
+            const dayContainer = document.getElementById(dayId);
+            const checkboxes = dayContainer.querySelectorAll('input[type="checkbox"]');
+            const checked = dayContainer.querySelectorAll('input[type="checkbox"]:checked');
+            
+            const percentage = (checked.length / checkboxes.length) * 100;
+            
+            const progressBar = document.getElementById('progress-' + dayId);
+            progressBar.style.width = percentage + '%';
+
+            // Feedback visual se completar tudo
+            if (percentage === 100) {
+                progressBar.style.backgroundColor = '#00cec9'; // Um tom mais brilhante
+            }
+        }
+    </script>
+
+</body>
+</html>
