@@ -6,7 +6,7 @@
     <title>Treino Semanal</title>
     <style>
         :root {
-            --primary: #6c5ce7; /* Roxo suave */
+            --primary: #6c5ce7;
             --secondary: #a29bfe;
             --bg: #f5f6fa;
             --card-bg: #ffffff;
@@ -44,7 +44,7 @@
             font-size: 0.9rem;
         }
 
-        /* Accordion Style for Days */
+        /* Accordion Style */
         .workout-day {
             background: var(--card-bg);
             border-radius: 12px;
@@ -64,12 +64,8 @@
             font-weight: 600;
         }
 
-        .day-header:hover {
-            opacity: 0.9;
-        }
-
         .day-content {
-            display: none; /* Hidden by default */
+            display: none;
             padding: 10px 0;
         }
 
@@ -90,12 +86,13 @@
             border-bottom: none;
         }
 
-        /* Custom Checkbox */
+        /* Checkbox Styling */
         .checkbox-wrapper {
             position: relative;
             margin-right: 15px;
             height: 24px;
             width: 24px;
+            flex-shrink: 0; /* Impede que o checkbox encolha */
         }
 
         .exercise-item input[type="checkbox"] {
@@ -139,29 +136,56 @@
             display: block;
         }
 
-        /* Text Styles */
+        /* Text and Link Styles */
         .exercise-info {
             flex-grow: 1;
         }
 
-        .exercise-name {
+        .exercise-name-link {
             font-size: 1rem;
             font-weight: 600;
-            display: block;
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary); /* Indicação sutil de link */
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .exercise-name-link:hover {
+            color: var(--primary);
+            border-bottom: 1px solid var(--primary);
+        }
+
+        .external-icon {
+            font-size: 0.75rem;
+            color: var(--primary);
+            vertical-align: super;
+            margin-left: 2px;
         }
 
         .exercise-details {
             font-size: 0.85rem;
             color: #636e72;
             margin-top: 4px;
+            display: block;
         }
 
         /* Completed State */
-        .exercise-item.completed .exercise-name {
+        .exercise-item.completed .exercise-name-link {
             text-decoration: line-through;
             color: #b2bec3;
+            border-bottom: none;
+        }
+        
+        .exercise-item.completed .exercise-details {
+             color: #b2bec3;
+        }
+        
+        .exercise-item.completed .external-icon {
+            display: none;
         }
 
+        /* Progress Bar */
         .progress-bar {
             height: 4px;
             background: #dfe6e9;
@@ -181,7 +205,7 @@
 
     <header>
         <h1>Treino Semanal</h1>
-        <p class="subtitle">Feminino • Moderado • 3x Semana</p>
+        <p class="subtitle">Feminino • Iniciante • 3x Semana</p>
     </header>
 
     <div class="workout-day">
@@ -191,53 +215,68 @@
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-day1"></div></div>
         <div class="day-content active" id="day1">
+            
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day1')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Agachamento Goblet (Halter)</span>
+                    <a href="https://www.google.com/search?q=Agachamento+Goblet+Halter+execução" target="_blank" class="exercise-name-link">
+                        Agachamento Goblet <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 12 a 15 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day1')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Afundo / Passada</span>
+                    <a href="https://www.google.com/search?q=Afundo+com+halteres+execução" target="_blank" class="exercise-name-link">
+                        Afundo / Passada <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 12 reps (cada perna)</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day1')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Stiff com Halteres</span>
+                    <a href="https://www.google.com/search?q=Stiff+com+Halteres+execução" target="_blank" class="exercise-name-link">
+                        Stiff com Halteres <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 12 a 15 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day1')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Elevação Pélvica (Chão)</span>
+                    <a href="https://www.google.com/search?q=Elevação+Pélvica+chão+execução" target="_blank" class="exercise-name-link">
+                        Elevação Pélvica (Chão) <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 15 a 20 reps</span>
                 </div>
             </div>
+
              <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day1')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Panturrilha em Pé</span>
+                    <a href="https://www.google.com/search?q=Panturrilha+em+Pé+livre+execução" target="_blank" class="exercise-name-link">
+                        Panturrilha em Pé <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 20 reps</span>
                 </div>
             </div>
@@ -251,53 +290,68 @@
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-day2"></div></div>
         <div class="day-content" id="day2">
+            
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day2')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Supino Reto com Halteres</span>
+                    <a href="https://www.google.com/search?q=Supino+Reto+com+Halteres+execução" target="_blank" class="exercise-name-link">
+                        Supino Reto com Halteres <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 12 a 15 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day2')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Remada Curvada (Halteres)</span>
+                    <a href="https://www.google.com/search?q=Remada+Curvada+Halteres+execução" target="_blank" class="exercise-name-link">
+                        Remada Curvada (Halteres) <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 12 a 15 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day2')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Desenvolvimento Ombros</span>
+                    <a href="https://www.google.com/search?q=Desenvolvimento+Ombros+Halteres+execução" target="_blank" class="exercise-name-link">
+                        Desenvolvimento Ombros <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 10 a 12 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day2')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Rosca Direta + Tríceps Francês</span>
+                    <a href="https://www.google.com/search?q=Rosca+Direta+Halteres+execução" target="_blank" class="exercise-name-link">
+                        Rosca Direta + Tríceps Francês <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">2 séries x 15 reps (Biset)</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day2')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Prancha Abdominal</span>
+                    <a href="https://www.google.com/search?q=Prancha+Abdominal+correta+execução" target="_blank" class="exercise-name-link">
+                        Prancha Abdominal <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 30 a 60 segundos</span>
                 </div>
             </div>
@@ -311,53 +365,68 @@
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progress-day3"></div></div>
         <div class="day-content" id="day3">
+            
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day3')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Agachamento Sumô (Halter)</span>
+                    <a href="https://www.google.com/search?q=Agachamento+Sumo+Halter+execução" target="_blank" class="exercise-name-link">
+                        Agachamento Sumô (Halter) <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 15 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day3')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Subida no Banco (Step-up)</span>
+                    <a href="https://www.google.com/search?q=Subida+no+Banco+Step+Up+execução" target="_blank" class="exercise-name-link">
+                        Subida no Banco (Step-up) <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 10 reps (cada perna)</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day3')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Flexão de Braços</span>
+                    <a href="https://www.google.com/search?q=Flexão+de+Braços+iniciante+execução" target="_blank" class="exercise-name-link">
+                        Flexão de Braços <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 8 a 12 reps (joelhos se precisar)</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day3')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Abdominal Remador</span>
+                    <a href="https://www.google.com/search?q=Abdominal+Remador+execução" target="_blank" class="exercise-name-link">
+                        Abdominal Remador <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">3 séries x 15 a 20 reps</span>
                 </div>
             </div>
+
             <div class="exercise-item">
                 <div class="checkbox-wrapper">
                     <input type="checkbox" onchange="checkTask(this, 'day3')">
                     <span class="custom-check"></span>
                 </div>
                 <div class="exercise-info">
-                    <span class="exercise-name">Cardio (Polichinelos ou Corda)</span>
+                    <a href="https://www.google.com/search?q=Polichinelo+execução" target="_blank" class="exercise-name-link">
+                        Cardio (Polichinelos ou Corda) <span class="external-icon">↗</span>
+                    </a>
                     <span class="exercise-details">5 minutos finais</span>
                 </div>
             </div>
@@ -365,33 +434,26 @@
     </div>
 
     <script>
-        // Função para abrir/fechar os dias (Acordeão)
         function toggleDay(id) {
             const content = document.getElementById(id);
-            // Toggle classe active para mostrar/esconder
             if (content.classList.contains('active')) {
                 content.classList.remove('active');
             } else {
-                // Opcional: Fechar os outros ao abrir um
                 document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
                 content.classList.add('active');
             }
         }
 
-        // Função para marcar exercício e atualizar progresso
         function checkTask(checkbox, dayId) {
-            // Estilo visual da linha
             const item = checkbox.closest('.exercise-item');
             if (checkbox.checked) {
                 item.classList.add('completed');
             } else {
                 item.classList.remove('completed');
             }
-
             updateProgress(dayId);
         }
 
-        // Atualiza a barra de progresso do dia específico
         function updateProgress(dayId) {
             const dayContainer = document.getElementById(dayId);
             const checkboxes = dayContainer.querySelectorAll('input[type="checkbox"]');
@@ -402,9 +464,8 @@
             const progressBar = document.getElementById('progress-' + dayId);
             progressBar.style.width = percentage + '%';
 
-            // Feedback visual se completar tudo
             if (percentage === 100) {
-                progressBar.style.backgroundColor = '#00cec9'; // Um tom mais brilhante
+                progressBar.style.backgroundColor = '#00cec9';
             }
         }
     </script>
